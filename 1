@@ -1,0 +1,36 @@
+typedef double (*poly_eval_fun)(double, double*, size_t);
+
+
+bool test_poly_eval(poly_eval_fun poly)
+{
+  double test[] = { 20., -1., 4., 9., -8., 4. };
+  const size_t size = sizeof(test) / sizeof(double);
+  return poly(100., test, 1) == 20.
+      && poly(0., test, size) == 20.
+      && poly(0., test, size - 1) == 20.
+
+      && abs_close(poly(1., test, size - 1), 24.)
+      && abs_close(poly(-1., test, size - 1), 8.)
+      && abs_close(poly(2.5, test, size - 1), -129.375)
+
+      && abs_close(poly(1., test, size), 28.)
+      && abs_close(poly(-1., test, size), 4.)
+      && abs_close(poly(2.5, test, size), 261.25);
+}
+
+int main()
+{
+  using namespace std;
+  poly_eval_fun poly[] =
+  {
+    poly_horner,
+    poly_horner_fma,
+    poly_estrin2_fma
+  };
+
+  for (auto pf: poly)
+    cout << test_poly_eval(pf);
+  cout << endl;
+
+  return EXIT_SUCCESS;
+}
